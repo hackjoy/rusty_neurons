@@ -1,5 +1,7 @@
 // View assembly generated via https://godbolt.org/
+use core::ops::Add;
 
+#[derive(Debug)]
 struct Value {
     data: f64,
     gradient: f64,
@@ -20,6 +22,17 @@ impl Value {
     }
 }
 
+impl Add for Value {
+    type Output = Value;
+
+    fn add(self, other: Value) -> Value {
+        let data = self.data + other.data;
+        let children = vec![self, other];
+        let output = Value::new(data, children, Some(("+").to_string()), None);
+        output
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -33,5 +46,17 @@ mod tests {
 
         assert_eq!(result.data, 1.2);
         assert_eq!(result.gradient, 0.0);
+        assert_eq!(result.gradient, 0.0);
+    }
+
+    #[test]
+    fn add_op() {
+        let a = Value::new(1.3, vec![], None, None);
+        let b = Value::new(1.2, vec![], None, None);
+
+        let c = a + b;
+
+        assert_eq!(c.data, 2.5);
+        assert_eq!(c._op, "+");
     }
 }
